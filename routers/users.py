@@ -72,3 +72,20 @@ async def end_season(db: mysql.connector.connection.MySQLConnection = Depends(ge
     db.commit()
     cursor.close()
     return {"message": "Season ended successfully"}
+
+
+@router.post("/reset")
+async def reset_db(db: mysql.connector.connection.MySQLConnection = Depends(get_db)):
+    cursor = db.cursor()
+
+    # Clear data from tables except seasons
+    cursor.execute("DELETE FROM trade")
+    cursor.execute("DELETE FROM users")
+
+    # Reset seasons data
+    cursor.execute("UPDATE seasons SET start_date = '2000-01-01', end_date = '2000-01-01'")
+
+    db.commit()
+    cursor.close()
+
+    return {"message": "Database reset successful"}
