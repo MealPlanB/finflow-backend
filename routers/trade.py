@@ -40,6 +40,13 @@ class TradeRequest(BaseModel):
     quantity: int
 
 
+class TradeHistory(BaseModel):
+    user_name: str
+    stock_name: str
+    quantity: int
+    price: int
+
+
 # 종목 이름을 입력하면 현재 가격을 반환하는 함수
 def get_current_stock_price(stock_name):
     endpoint = url + getStock
@@ -295,3 +302,37 @@ async def get_my_stats(name: str, db: mysql.connector.connection.MySQLConnection
     cursor.close()
 
     return response
+
+
+@router.get("/history/{name}")
+async def get_trade_history(name: str, db: mysql.connector.connection.MySQLConnection = Depends(get_db)):
+    cursor = db.cursor()
+    cursor.execute("SELECT trade.stock_name, trade.quantity, trade.sold_quantity, trade.price, users.name FROM trade "
+                   "JOIN users ON trade.user_id = users.id WHERE users.name = %s", (name,))
+    trade_data = cursor.fetchall()
+    cursor.close()
+    if trade_data:
+        trade_history = []
+        for row in trade_data:
+            stock_name = row[0]
+            quantity = row[1] + row[2]  # quantity + sold_quantity
+            price = row[3]
+            user_name = row[4]
+
+            trade = TradeHistory(stock_name=stock_name, quantity=quantity, price=price, user_name=user_name)
+            trade_history.append(trade)
+
+        return trade_history
+    else:
+        raise HTTPException(status_code=404, detail="Trade history not found")
+
+
+@router.get("/current-stocks")
+async def get_current_stocks(db: mysql.connector.connection.MySQLConnection = Depends(get_db)):
+    cursor = db.cursor()
+    cursor.execute("SELECT DISTINCT stock_name FROM trade")
+    stock_data = cursor.fetchall()
+    cursor.close()
+
+    current_stocks = [row[0] for row in stock_data]
+    return {"current_stocks": current_stocks}
