@@ -27,7 +27,8 @@ CREATE TABLE trade (
 CREATE TABLE seasons (
                          id INT PRIMARY KEY AUTO_INCREMENT,
                          start_date DATE NOT NULL,
-                         end_date DATE NOT NULL
+                         end_date DATE NOT NULL,
+                         host VARCHAR(255) DEFAULT ''
 );
 
 -- 시즌 데이터 삽입

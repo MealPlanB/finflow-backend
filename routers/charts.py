@@ -3,13 +3,13 @@ import requests
 import json
 from pydantic import BaseModel
 
-class current_chartInfo(BaseModel):
-    high_price : str
-    low_price : str
-    current_price : str
-    start_price : str
-    current_rate : str
 
+class CurrentChartInfo(BaseModel):
+    high_price: str
+    low_price: str
+    current_price: str
+    start_price: str
+    current_rate: str
 
 
 url = 'https://openapivts.koreainvestment.com:29443/'
@@ -17,56 +17,40 @@ getStock = 'uapi/domestic-stock/v1/quotations/inquire-price'
 APP_KEY = 'PSIZExuxlSzK50wmyUIeI1VWQvvqepe9FeJW'
 APP_SECRET = 'IuAtB6vXKnChmNsUkVG5bVqZ13kN/3j1gVYQwn57ruNTvOegy5tKGlaYlInAJYv4Ysb6yuSF64VQJV9b8NOatzZOtLeGuWjgI9UIx4WWceFokBsTFdQ220SVB9gYeEUjPA7qov6uhTcJQay4bqV7xNfWPaf6WMYgGQzWxLFCpeDWd3gDg0c='
 
-
 headers = {
-    'content-type' : 'application/json; charset=utf-8',
-    'authorization' : 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0b2tlbiIsImF1ZCI6ImZlNmVlZGM4LWVhY2QtNDM5Yy1iYmRhLWE0YWU3MTE5Nzg1OCIsImlzcyI6InVub2d3IiwiZXhwIjoxNjg1NzY2NTA2LCJpYXQiOjE2ODU2ODAxMDYsImp0aSI6IlBTSVpFeHV4bFN6SzUwd215VUllSTFWV1F2dnFlcGU5RmVKVyJ9.doCpyeROBQaVSbwpX0J6fLygs8ejTKFXE1YiG-1aMFF1McowYakCTCqozC86wVlIw7iQPV_jGUoJWI47iGgqmA',
-    'appkey' : APP_KEY,
-    'appsecret' : APP_SECRET,
-    'tr_id' : 'FHKST01010100'
+    'content-type': 'application/json; charset=utf-8',
+    'authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0b2tlbiIsImF1ZCI6IjEwMTMwZjg3LTFlZTQtNDljYy1iZmZjLWVkZjE2MjBiOTI3ZSIsImlzcyI6InVub2d3IiwiZXhwIjoxNjg1OTcwMzIxLCJpYXQiOjE2ODU4ODM5MjEsImp0aSI6IlBTSVpFeHV4bFN6SzUwd215VUllSTFWV1F2dnFlcGU5RmVKVyJ9.OuK67IDaTEcxhY-J_A1oYPh7c_PXeqvfZkacHcSXT1_ogCjLfUWzVgwk08geyH4-lPqXIFPN7pCwEg6tif8kag',
+    'appkey': APP_KEY,
+    'appsecret': APP_SECRET,
+    'tr_id': 'FHKST01010100'
 }
 endpoint = url + getStock
 router = APIRouter()
 
 
-#최고가, 최저가, 현재가, 시가, 등락율(전일대비) 반환해줌
 @router.get("/show/{stock}")
-async def afaf(stock : str):
-    f = open('stock_code.txt', 'r', encoding = 'euc-kr')
-    reader = f.read()
+async def show_stock_info(stock: str):
+    with open('stock_code.txt', 'r', encoding='euc-kr') as f:
+        stock_data = eval(f.read())
 
-    stock_data = eval(reader)
-    stock_keys = stock_data.keys()
-    f.close()
+    stock_code = next((code for code, name in stock_data.items() if name == stock), None)
 
-    stock_name = stock
-
-    input_code = ""
-    for key in stock_keys:
-        if stock_data[key] == stock_name:
-            input_code = key
-            print(input_code)
-            break
-
-    # 종목 코드를 찾은 경우
-    if input_code != "":
+    if stock_code:
         params = {
             "fid_cond_mrkt_div_code": "J",
-            "fid_input_iscd": input_code
+            "fid_input_iscd": stock_code
         }
         response = requests.get(endpoint, params=params, headers=headers)
         result = json.loads(response.text)
-        high_P = result['output']['stck_hgpr'] #최고가
-        low_P = result['output']['stck_lwpr'] #최저가
-        current_P = result['output']['stck_prpr'] #현재가
-        start_P = result['output']['stck_oprc'] #시작가
-        current_R = result['output']['prdy_ctrt'] #등락율
 
-        chart_info = current_chartInfo(high_price = high_P, low_price = low_P, current_price = current_P, start_price = start_P, current_rate = current_R)
-        
+        chart_info = CurrentChartInfo(
+            high_price=result['output']['stck_hgpr'],
+            low_price=result['output']['stck_lwpr'],
+            current_price=result['output']['stck_prpr'],
+            start_price=result['output']['stck_oprc'],
+            current_rate=result['output']['prdy_ctrt']
+        )
+
         return chart_info
     else:
-        return "오류!"
-
-
-
+        return {"message": "Stock not found"}

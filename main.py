@@ -8,7 +8,7 @@ app = FastAPI()
 
 app.include_router(users.router)
 app.include_router(trade.router, prefix="/trade")
-app.include_router(charts.router)
+app.include_router(charts.router, prefix="/charts")
 
 
 @app.get("/openapi.json")

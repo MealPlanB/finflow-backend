@@ -69,6 +69,7 @@ async def end_season(db: mysql.connector.connection.MySQLConnection = Depends(ge
     cursor = db.cursor()
     # start_date와 end_date를 2000-00-00으로 업데이트
     cursor.execute("UPDATE seasons SET start_date = '2000-01-01', end_date = '2000-01-01'")
+    cursor.execute("UPDATE seasons SET host = ''")
     db.commit()
     cursor.close()
     return {"message": "Season ended successfully"}
@@ -84,8 +85,30 @@ async def reset_db(db: mysql.connector.connection.MySQLConnection = Depends(get_
 
     # Reset seasons data
     cursor.execute("UPDATE seasons SET start_date = '2000-01-01', end_date = '2000-01-01'")
-
+    cursor.execute("UPDATE seasons SET host = ''")
     db.commit()
     cursor.close()
 
     return {"message": "Database reset successful"}
+
+
+@router.post("/set-host/{name}")
+async def assign_host(name: str, db: mysql.connector.connection.MySQLConnection = Depends(get_db)):
+    cursor = db.cursor()
+    cursor.execute("UPDATE seasons SET host = %s", (name,))
+    db.commit()
+    cursor.close()
+    return {"message": "Host set successfully"}
+
+
+@router.post("/is-host/{name}")
+async def check_host(name: str, db: mysql.connector.connection.MySQLConnection = Depends(get_db)):
+    cursor = db.cursor()
+    cursor.execute("SELECT host FROM seasons")
+    result = cursor.fetchone()
+    cursor.close()
+
+    if result and result[0] == name:
+        return {"message": "You are the host"}
+    else:
+        return {"message": "You are not the host"}
