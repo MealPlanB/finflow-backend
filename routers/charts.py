@@ -19,7 +19,7 @@ APP_SECRET = 'IuAtB6vXKnChmNsUkVG5bVqZ13kN/3j1gVYQwn57ruNTvOegy5tKGlaYlInAJYv4Ys
 
 headers = {
     'content-type': 'application/json; charset=utf-8',
-    'authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0b2tlbiIsImF1ZCI6IjEwMTMwZjg3LTFlZTQtNDljYy1iZmZjLWVkZjE2MjBiOTI3ZSIsImlzcyI6InVub2d3IiwiZXhwIjoxNjg1OTcwMzIxLCJpYXQiOjE2ODU4ODM5MjEsImp0aSI6IlBTSVpFeHV4bFN6SzUwd215VUllSTFWV1F2dnFlcGU5RmVKVyJ9.OuK67IDaTEcxhY-J_A1oYPh7c_PXeqvfZkacHcSXT1_ogCjLfUWzVgwk08geyH4-lPqXIFPN7pCwEg6tif8kag',
+    'authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0b2tlbiIsImF1ZCI6ImMxYjA1YWIyLWQzNjctNGIxYS04YWU4LWNiNzVlNGZjNDhlOSIsImlzcyI6InVub2d3IiwiZXhwIjoxNjg2NTQ4Mzg5LCJpYXQiOjE2ODY0NjE5ODksImp0aSI6IlBTSVpFeHV4bFN6SzUwd215VUllSTFWV1F2dnFlcGU5RmVKVyJ9.6OyMiR5_FPoF3nwjRe-FIr-ySzVbS91UuQmgQ_t-mznv_7VUn8vgjteV6d7V7op9vdGzHyio4RLlFDkMVQc75A',
     'appkey': APP_KEY,
     'appsecret': APP_SECRET,
     'tr_id': 'FHKST01010100'
